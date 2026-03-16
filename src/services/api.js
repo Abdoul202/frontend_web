@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/api',
+  // Use VITE_API_URL in production (Render), fallback to '/api' for local dev proxy
+  baseURL: import.meta.env.VITE_API_URL || '/api',
   timeout: 15000,
 })
 
