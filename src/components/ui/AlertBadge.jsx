@@ -5,7 +5,7 @@ export default function AlertBadge({ role, navKey }) {
   const [count, setCount] = useState(0)
 
   useEffect(() => {
-    const fetch = async () => {
+    const loadCount = async () => {
       try {
         if (navKey?.includes('commandes') && role === 'caissier') {
           const { data } = await commandesAPI.getAll({ statut: 'envoye', limit: 1 })
@@ -16,8 +16,8 @@ export default function AlertBadge({ role, navKey }) {
         }
       } catch {}
     }
-    fetch()
-    const t = setInterval(fetch, 60000)
+    loadCount()
+    const t = setInterval(loadCount, 60000)
     return () => clearInterval(t)
   }, [role, navKey])
 

@@ -49,7 +49,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard label="CA du jour"        value={fmtF(stats?.ca?.jour)}        icon={TrendingUp}   color="primary" />
         <StatCard label="CA du mois"        value={fmtF(stats?.ca?.mois)}        icon={TrendingUp}   color="blue"    />
-        <StatCard label="Ventes aujourd'hui" value={stats?.ventesJour ?? '—'}    icon={ShoppingCart} color="primary" />
+        <StatCard label="Ventes aujourd'hui" value={stats?.nombreVentesAujourdhui ?? '—'} icon={ShoppingCart} color="primary" />
         <StatCard label="Alertes non lues"  value={stats?.alertesNonLues ?? 0}   icon={Bell}         color="red"     />
       </div>
 

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useMemo } from 'react'
 import { authAPI } from '../services/api'
 
 const AuthContext = createContext(null)
@@ -33,13 +33,16 @@ export function AuthProvider({ children }) {
     setUser(null)
   }
 
-  const isAdmin      = user?.role === 'admin'
-  const isPharmacien = user?.role === 'pharmacien'
-  const isCaissier   = user?.role === 'caissier'
-  const canEditStock = isAdmin || isPharmacien
+  const value = useMemo(() => {
+    const isAdmin      = user?.role === 'admin'
+    const isPharmacien = user?.role === 'pharmacien'
+    const isCaissier   = user?.role === 'caissier'
+    const canEditStock = isAdmin || isPharmacien
+    return { user, loading, login, logout, isAdmin, isPharmacien, isCaissier, canEditStock }
+  }, [user, loading])
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isAdmin, isPharmacien, isCaissier, canEditStock }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )

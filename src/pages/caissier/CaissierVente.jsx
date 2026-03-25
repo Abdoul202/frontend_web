@@ -41,7 +41,8 @@ export default function CaissierVente() {
   const updateQty = (id, delta) => setCart(prev => prev.map(i => i.medicineId === id ? { ...i, quantite: Math.max(1, i.quantite + delta) } : i))
   const remove    = (id) => setCart(prev => prev.filter(i => i.medicineId !== id))
   const total     = cart.reduce((s, i) => s + i.prixUnitaire * i.quantite, 0)
-  const monnaie   = montantRecu ? parseFloat(montantRecu) - total : 0
+  const parsedMontant = parseFloat(montantRecu)
+  const monnaie   = montantRecu && !isNaN(parsedMontant) ? parsedMontant - total : 0
 
   const handleSubmit = async () => {
     if (!cart.length) { toast.error('Panier vide'); return }
@@ -50,11 +51,16 @@ export default function CaissierVente() {
       const { data } = await salesAPI.create({
         items: cart.map(i => ({ medicineId: i.medicineId, quantite: i.quantite })),
         modePaiement: mode,
-        montantRecu: montantRecu ? parseFloat(montantRecu) : total,
+        montantRecu: montantRecu && !isNaN(parsedMontant) ? parsedMontant : total,
       })
       toast.success(`Vente enregistrée — ${data.data.reference}`)
       // open receipt
-      try { const { data: pdf } = await salesAPI.getRecu(data.data._id); window.open(URL.createObjectURL(pdf), '_blank') } catch {}
+      try {
+        const { data: pdf } = await salesAPI.getRecu(data.data._id)
+        const url = URL.createObjectURL(pdf)
+        window.open(url, '_blank')
+        setTimeout(() => URL.revokeObjectURL(url), 60000)
+      } catch {}
       navigate('/caissier/historique')
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de la vente')

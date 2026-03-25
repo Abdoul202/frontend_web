@@ -45,8 +45,9 @@ export default function NewSalePage() {
   const removeItem = (id) => setCart(prev => prev.filter(i => i.medicineId !== id))
 
   const total     = cart.reduce((s, i) => s + i.prixUnitaire * i.quantite, 0)
-  const monnaie   = montantRecu ? parseFloat(montantRecu) - total : 0
-  const canSubmit = cart.length > 0 && (modePaiement !== 'especes' || !montantRecu || parseFloat(montantRecu) >= total)
+  const parsedMontant = parseFloat(montantRecu)
+  const monnaie   = montantRecu && !isNaN(parsedMontant) ? parsedMontant - total : 0
+  const canSubmit = cart.length > 0 && (modePaiement !== 'especes' || !montantRecu || (!isNaN(parsedMontant) && parsedMontant >= total))
 
   const handleSubmit = async () => {
     setSaving(true)
@@ -54,7 +55,7 @@ export default function NewSalePage() {
       const { data } = await salesAPI.create({
         items: cart.map(i => ({ medicineId: i.medicineId, quantite: i.quantite })),
         modePaiement,
-        montantRecu: montantRecu ? parseFloat(montantRecu) : total,
+        montantRecu: montantRecu && !isNaN(parsedMontant) ? parsedMontant : total,
       })
       toast.success(`Vente enregistrée — ${data.data.reference}`)
       // Download receipt
@@ -62,6 +63,7 @@ export default function NewSalePage() {
         const { data: pdf } = await salesAPI.getRecu(data.data._id)
         const url = URL.createObjectURL(pdf)
         window.open(url, '_blank')
+        setTimeout(() => URL.revokeObjectURL(url), 60000)
       } catch {}
       navigate('/sales')
     } catch (err) {

@@ -1,3 +1,5 @@
+import { useState, useEffect, useRef } from 'react'
+
 // Shared reusable components
 
 export function PageHeader({ title, subtitle, children }) {
@@ -99,14 +101,26 @@ export function Pagination({ page, pages, onPage }) {
   )
 }
 
-export function SearchInput({ value, onChange, placeholder = 'Rechercher…' }) {
+export function SearchInput({ value, onChange, placeholder = 'Rechercher…', debounceMs = 300 }) {
+  const [local, setLocal] = useState(value)
+  const timerRef = useRef(null)
+
+  useEffect(() => { setLocal(value) }, [value])
+  useEffect(() => () => clearTimeout(timerRef.current), [])
+
+  const handleChange = (v) => {
+    setLocal(v)
+    clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => onChange(v), debounceMs)
+  }
+
   return (
     <div className="relative">
       <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input
         type="text"
-        value={value}
-        onChange={e => onChange(e.target.value)}
+        value={local}
+        onChange={e => handleChange(e.target.value)}
         placeholder={placeholder}
         className="input pl-9"
       />

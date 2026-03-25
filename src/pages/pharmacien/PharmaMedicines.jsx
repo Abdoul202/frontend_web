@@ -49,8 +49,12 @@ export default function PharmaMedicines() {
   }
 
   const handleExport = async () => {
-    try { const { data } = await medicinesAPI.exportXLSX(); const a = document.createElement('a'); a.href = URL.createObjectURL(data); a.download = 'medicaments.xlsx'; a.click() }
-    catch { toast.error('Erreur export') }
+    try {
+      const { data } = await medicinesAPI.exportXLSX()
+      const url = URL.createObjectURL(data)
+      const a = document.createElement('a'); a.href = url; a.download = 'medicaments.xlsx'; a.click()
+      URL.revokeObjectURL(url)
+    } catch { toast.error('Erreur export') }
   }
 
   const f = k => e => setForm(p => ({ ...p, [k]: e.target.value }))

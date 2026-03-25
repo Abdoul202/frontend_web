@@ -31,8 +31,12 @@ export default function AdminSales() {
   useEffect(() => { load() }, [load])
 
   const handleRecu = async s => {
-    try { const { data } = await salesAPI.getRecu(s._id); window.open(URL.createObjectURL(data), '_blank') }
-    catch { toast.error('Erreur reçu') }
+    try {
+      const { data } = await salesAPI.getRecu(s._id)
+      const url = URL.createObjectURL(data)
+      window.open(url, '_blank')
+      setTimeout(() => URL.revokeObjectURL(url), 60000)
+    } catch { toast.error('Erreur reçu') }
   }
 
   const handleCancel = async () => {
@@ -106,7 +110,7 @@ export default function AdminSales() {
           </div>
           <table className="w-full text-sm">
             <thead><tr className="border-b border-surface-100 text-left"><th className="py-2 font-medium text-surface-500">Médicament</th><th className="py-2 font-medium text-surface-500">Qté</th><th className="py-2 font-medium text-surface-500 text-right">Sous-total</th></tr></thead>
-            <tbody>{detail.items?.map((i,x) => <tr key={x} className="border-b border-surface-50"><td className="py-2">{i.nomMedicament}</td><td className="py-2">{i.quantite}</td><td className="py-2 font-mono text-right">{i.sousTotal?.toLocaleString()} F</td></tr>)}</tbody>
+            <tbody>{detail.items?.map((i,x) => <tr key={i.medicineId || x} className="border-b border-surface-50"><td className="py-2">{i.nomMedicament}</td><td className="py-2">{i.quantite}</td><td className="py-2 font-mono text-right">{i.sousTotal?.toLocaleString()} F</td></tr>)}</tbody>
           </table>
           <div className="flex justify-between font-bold text-surface-900 mt-3 pt-3 border-t border-surface-100">
             <span>Total</span><span className="font-mono text-primary-600">{detail.total?.toLocaleString()} FCFA</span>

@@ -19,13 +19,21 @@ export default function AdminReports() {
   }
 
   const downloadPDF = async () => {
-    try { const { data } = await reportsAPI.monthlyPDF({ year, month }); const a = document.createElement('a'); a.href = URL.createObjectURL(data); a.download = `rapport-${year}-${month}.pdf`; a.click() }
-    catch { toast.error('Erreur PDF') }
+    try {
+      const { data } = await reportsAPI.monthlyPDF({ year, month })
+      const url = URL.createObjectURL(data)
+      const a = document.createElement('a'); a.href = url; a.download = `rapport-${year}-${month}.pdf`; a.click()
+      URL.revokeObjectURL(url)
+    } catch { toast.error('Erreur PDF') }
   }
 
   const downloadStockXLSX = async () => {
-    try { const { data } = await reportsAPI.stockXLSX(); const a = document.createElement('a'); a.href = URL.createObjectURL(data); a.download = 'rapport-stock.xlsx'; a.click() }
-    catch { toast.error('Erreur XLSX') }
+    try {
+      const { data } = await reportsAPI.stockXLSX()
+      const url = URL.createObjectURL(data)
+      const a = document.createElement('a'); a.href = url; a.download = 'rapport-stock.xlsx'; a.click()
+      URL.revokeObjectURL(url)
+    } catch { toast.error('Erreur XLSX') }
   }
 
   return (
@@ -40,7 +48,7 @@ export default function AdminReports() {
               {MONTHS_FR.map((m, i) => <option key={i+1} value={i+1}>{m}</option>)}
             </select>
             <select className="select w-28" value={year} onChange={e => setYear(parseInt(e.target.value))}>
-              {[2024,2025,2026,2027].map(y => <option key={y} value={y}>{y}</option>)}
+              {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
           <div className="flex gap-2 mb-4">

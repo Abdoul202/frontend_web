@@ -23,7 +23,7 @@ export default function CaissierDashboard() {
       const ventesAujourd = sales.data.data?.filter(s => {
         const d = new Date(s.createdAt)
         const now = new Date()
-        return d.getDate() === now.getDate() && d.getMonth() === now.getMonth()
+        return d.getFullYear() === now.getFullYear() && d.getDate() === now.getDate() && d.getMonth() === now.getMonth()
       }) || []
       setStats({
         commandes: cmds.data.pagination?.total || 0,

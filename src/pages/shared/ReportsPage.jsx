@@ -24,6 +24,7 @@ export default function ReportsPage() {
       const { data } = await reportsAPI.monthlyPDF({ year, month })
       const url = URL.createObjectURL(data)
       const a = document.createElement('a'); a.href = url; a.download = `rapport-${year}-${month}.pdf`; a.click()
+      URL.revokeObjectURL(url)
     } catch { toast.error('Erreur export PDF') }
   }
 
@@ -32,6 +33,7 @@ export default function ReportsPage() {
       const { data } = await reportsAPI.stockXLSX()
       const url = URL.createObjectURL(data)
       const a = document.createElement('a'); a.href = url; a.download = 'rapport-stock.xlsx'; a.click()
+      URL.revokeObjectURL(url)
     } catch { toast.error('Erreur export stock') }
   }
 
@@ -53,7 +55,7 @@ export default function ReportsPage() {
               {MONTHS.map((m, i) => <option key={i+1} value={i+1}>{m}</option>)}
             </select>
             <select className="select w-28" value={year} onChange={e => setYear(parseInt(e.target.value))}>
-              {[2024,2025,2026,2027].map(y => <option key={y} value={y}>{y}</option>)}
+              {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map(y => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
           <div className="flex gap-2">

@@ -42,6 +42,7 @@ export default function SalesPage() {
       const { data } = await salesAPI.getRecu(sale._id)
       const url = URL.createObjectURL(data)
       window.open(url, '_blank')
+      setTimeout(() => URL.revokeObjectURL(url), 60000)
     } catch { toast.error('Erreur génération reçu') }
   }
 
@@ -114,7 +115,7 @@ export default function SalesPage() {
                     <button onClick={() => handleRecu(s)} className="p-1.5 rounded-lg hover:bg-surface-100 text-surface-400 hover:text-surface-600 transition-colors" title="Reçu PDF">
                       <FileText size={15}/>
                     </button>
-                    {s.statut === 'valide' && (isAdmin || true) && (
+                    {s.statut === 'valide' && isAdmin && (
                       <button onClick={() => { setCancelTarget(s); setCancelRaison('') }} className="p-1.5 rounded-lg hover:bg-red-50 text-surface-400 hover:text-red-500 transition-colors" title="Annuler">
                         <XCircle size={15}/>
                       </button>
@@ -151,7 +152,7 @@ export default function SalesPage() {
               </thead>
               <tbody>
                 {detail.items?.map((item, i) => (
-                  <tr key={i} className="border-b border-surface-50">
+                  <tr key={item.medicineId || i} className="border-b border-surface-50">
                     <td className="py-2">{item.nomMedicament}</td>
                     <td className="py-2">{item.quantite}</td>
                     <td className="py-2 font-mono">{item.prixUnitaire?.toLocaleString()} F</td>

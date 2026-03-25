@@ -37,7 +37,7 @@ export default function CaissierCommandes() {
     try {
       await commandesAPI.encaisser(encaissModal._id, {
         modePaiement: payForm.modePaiement,
-        montantRecu: parseFloat(payForm.montantRecu) || encaissModal.total,
+        montantRecu: !isNaN(parsedMontantRecu) ? parsedMontantRecu : encaissModal.total,
       })
       toast.success('Commande encaissée — reçu généré')
       setEncaissModal(null)
@@ -46,8 +46,9 @@ export default function CaissierCommandes() {
     finally { setSaving(false) }
   }
 
-  const monnaie = encaissModal && payForm.montantRecu
-    ? parseFloat(payForm.montantRecu) - encaissModal.total
+  const parsedMontantRecu = parseFloat(payForm.montantRecu)
+  const monnaie = encaissModal && payForm.montantRecu && !isNaN(parsedMontantRecu)
+    ? parsedMontantRecu - encaissModal.total
     : 0
 
   return (

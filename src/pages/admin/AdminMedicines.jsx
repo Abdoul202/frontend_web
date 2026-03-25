@@ -53,7 +53,9 @@ export default function AdminMedicines() {
   const handleExport = async () => {
     try {
       const { data } = await medicinesAPI.exportXLSX()
-      const a = document.createElement('a'); a.href = URL.createObjectURL(data); a.download = 'medicaments.xlsx'; a.click()
+      const url = URL.createObjectURL(data)
+      const a = document.createElement('a'); a.href = url; a.download = 'medicaments.xlsx'; a.click()
+      URL.revokeObjectURL(url)
     } catch { toast.error('Erreur export') }
   }
 
